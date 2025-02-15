@@ -128,6 +128,18 @@
         display: block;
       }
 
+      .error {
+          color: red;
+          font-size: 0.9em;
+      }
+
+      .calculate.form-group {
+        width: 100%;
+        margin-top: 20px;
+        border-top: 1px solid #999;
+        padding-top: 0.5em;
+      }
+
       /* Dark mode support */
       @media (prefers-color-scheme: dark) {
           body {
@@ -184,25 +196,29 @@
         <div class="form-group">
             <label for="loanAmount">Loan Amount:</label>
             <input type="number" id="loanAmount" required>
+            <span class="error" id="loanAmountError"></span>
         </div>
         <div class="form-group">
             <label for="loanDuration">Loan Duration (years):</label>
             <input type="number" id="loanDuration" required>
+            <span class="error" id="loanDurationError"></span>
         </div>
         <div class="form-group">
             <label for="interestRate">Interest Rate (%):</label>
             <input type="number" id="interestRate" step="0.01" required>
+            <span class="error" id="interestRateError"></span>
         </div>
         <div class="form-group">
             <label for="downPayment">Down Payment:</label>
             <input type="number" id="downPayment" required>
+            <span class="error" id="downPaymentError"></span>
         </div>
         <section id="recastSection" class="form-group">
             <h3>Recast Details</h3>
             <div id="recastContainer"></div>
             <button type="button" onclick="addRecast()">Add Recast</button>
         </section>
-        <div class="form-group">
+        <div class="calculate form-group"></div>
             <button type="button" onclick="calculateMortgage()">Calculate</button>
         </div>
     </form>
@@ -235,16 +251,78 @@
                     content.classList.toggle('active');
                 });
             }
+
+            // Load state from URL hash if available
+            if (window.location.hash) {
+                const state = JSON.parse(decodeURIComponent(window.location.hash.substring(1)));
+                document.getElementById('loanAmount').value = state.loanAmount;
+                document.getElementById('loanDuration').value = state.loanDuration;
+                document.getElementById('interestRate').value = state.interestRate;
+                document.getElementById('downPayment').value = state.downPayment;
+
+                state.recasts.forEach(recast => {
+                    addRecast();
+                    const recastEntries = document.querySelectorAll('.recastEntry');
+                    const lastEntry = recastEntries[recastEntries.length - 1];
+                    lastEntry.querySelector('.recastMonth').value = recast.month;
+                    lastEntry.querySelector('.recastAmount').value = recast.amount;
+                });
+
+                calculateMortgage();
+            }
+
+            // Add event listeners for dynamic recalculation
+            document.querySelectorAll('#loanAmount, #loanDuration, #interestRate, #downPayment').forEach(input => {
+                input.addEventListener('input', calculateMortgage);
+            });
         });
 
         function calculateMortgage() {
-            const loanAmount = document.getElementById('loanAmount').value - document.getElementById('downPayment').value;
-            const loanDuration = document.getElementById('loanDuration').value;
-            const interestRate = document.getElementById('interestRate').value / 100;
-            const monthlyRate = interestRate / 12;
+            // Validate inputs
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const loanDuration = parseInt(document.getElementById('loanDuration').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value);
+            const downPayment = parseFloat(document.getElementById('downPayment').value);
+
+            let valid = true;
+
+            if (isNaN(loanAmount) || loanAmount <= 0) {
+                document.getElementById('loanAmountError').textContent = 'Please enter a valid loan amount.';
+                valid = false;
+            } else {
+                document.getElementById('loanAmountError').textContent = '';
+            }
+
+            if (isNaN(loanDuration) || loanDuration <= 0 || loanDuration > 100) {
+                document.getElementById('loanDurationError').textContent = 'Please enter a valid loan duration (1-100 years).';
+                valid = false;
+            } else {
+                document.getElementById('loanDurationError').textContent = '';
+            }
+
+            if (isNaN(interestRate) || interestRate <= 0) {
+                document.getElementById('interestRateError').textContent = 'Please enter a valid interest rate.';
+                valid = false;
+            } else {
+                document.getElementById('interestRateError').textContent = '';
+            }
+
+            if (isNaN(downPayment) || downPayment < 0) {
+                document.getElementById('downPaymentError').textContent = 'Please enter a valid down payment.';
+                valid = false;
+            } else {
+                document.getElementById('downPaymentError').textContent = '';
+            }
+
+            if (!valid) {
+                return;
+            }
+
+            const principal = loanAmount - downPayment;
+            const monthlyRate = interestRate / 100 / 12;
             const numberOfPayments = loanDuration * 12;
 
-            const monthlyPayment = (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -numberOfPayments));
+            const monthlyPayment = (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -numberOfPayments));
             document.getElementById('monthlyPayment').textContent = monthlyPayment.toFixed(2);
 
             // Gather all recast data
@@ -253,7 +331,17 @@
                 amount: parseFloat(entry.querySelector('.recastAmount').value)
             }));
 
-            generateAmortizationTable(loanAmount, monthlyRate, numberOfPayments, monthlyPayment, recasts);
+            // Save state to URL hash
+            const state = {
+                loanAmount: document.getElementById('loanAmount').value,
+                loanDuration: document.getElementById('loanDuration').value,
+                interestRate: document.getElementById('interestRate').value,
+                downPayment: document.getElementById('downPayment').value,
+                recasts: recasts
+            };
+            window.location.hash = encodeURIComponent(JSON.stringify(state));
+
+            generateAmortizationTable(principal, monthlyRate, numberOfPayments, monthlyPayment, recasts);
         }
 
         function generateAmortizationTable(principal, monthlyRate, numberOfPayments, monthlyPayment, recasts) {
@@ -300,9 +388,9 @@
             div.className = 'recastEntry';
             div.innerHTML = `
                 <label>Recast Month:</label>
-                <input type="number" class="recastMonth"><br>
+                <input type="number" class="recastMonth" oninput="calculateMortgage()"><br>
                 <label>Recast Amount:</label>
-                <input type="number" class="recastAmount"><br>
+                <input type="number" class="recastAmount" oninput="calculateMortgage()"><br>
                 <button type="button" onclick="removeRecast(this)">Remove</button><br><br>
             `;
             container.appendChild(div); // Add the new recast entry to the container
@@ -310,6 +398,7 @@
 
         function removeRecast(button) {
             button.parentNode.remove(); // Remove the parent div of the button
+            calculateMortgage(); // Recalculate after removing a recast
         }
     </script>
 </body>
