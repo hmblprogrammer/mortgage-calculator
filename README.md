@@ -1,4 +1,4 @@
-# DHTML Mortgage Calculator
+# Dynamic Mortgage Modeler
 
 ## Overview
 
