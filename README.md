@@ -8,6 +8,14 @@ This feature allows users to see the impact of additional principal payments on
 their mortgage schedule, which is crucial for planning early payoffs and
 managing monthly budgets effectively.
 
+[You can try this tool online](https://mortgagecalc.labs.digitalfruition.com/),
+but it's also self-contained in the `index.html` file so you can download it and
+run it locally (offline).
+
+The URL is updated with your input, so links will maintain all the information
+entered for sharing or saving results. (Delete everything after the `#` to reset
+to an empty page)
+
 ## Motivation
 
 When searching for mortgage tools, I found none that offered the functionality
