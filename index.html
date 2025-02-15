@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mortgage Calculator</title>
+    <style>
+      /* General body styles */
+      body {
+          font-family: 'Arial', sans-serif;
+          background-color: #f4f4f9;
+          color: #333;
+          margin: 20px;
+          padding: 20px;
+      }
+
+      /* Header styles */
+      h1, h2, h3 {
+          color: #2c3e50;
+      }
+
+      /* Form styling */
+      form {
+          background: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.1);
+          margin-bottom: 20px;
+      }
+
+      label {
+          display: block;
+          margin-bottom: 10px;
+      }
+
+      input[type="number"] {
+          width: calc(100% - 22px);
+          padding: 10px;
+          margin-bottom: 20px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+      }
+
+      button {
+          background-color: #3498db;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          font-weight: bold;
+          border-radius: 4px;
+          cursor: pointer;
+          box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      }
+
+      button:hover {
+          background-color: #2980b9;
+      }
+
+      /* Table styling */
+      table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      }
+
+      th, td {
+          text-align: left;
+          padding: 8px;
+          border-bottom: 1px solid #ddd;
+      }
+
+      th {
+          background-color: #3498db;
+          color: white;
+      }
+
+      /* Add media queries for responsiveness */
+      @media (max-width: 600px) {
+          input[type="number"], button {
+              width: 100%;
+          }
+      }
+
+      @media (min-width: 600px) {
+          form {
+              display: flex;
+              flex-wrap: wrap;
+              justify-content: space-between;
+          }
+
+          .form-group {
+              width: 48%;
+          }
+
+          input[type="number"] {
+              width: calc(100% - 22px);
+          }
+      }
+
+      /* Collapsible section styling */
+      .collapsible {
+          background-color: #3498db;
+          color: white;
+          cursor: pointer;
+          padding: 10px;
+          width: 100%;
+          border: none;
+          text-align: left;
+          outline: none;
+          font-size: 15px;
+      }
+
+      .active, .collapsible:hover {
+          background-color: #2980b9;
+      }
+
+      .content {
+          padding: 0 18px;
+          display: none;
+          overflow: hidden;
+          background-color: #f1f1f1;
+      }
+
+      .content.active {
+        display: block;
+      }
+
+      /* Dark mode support */
+      @media (prefers-color-scheme: dark) {
+          body {
+              background-color: #121212;
+              color: #ffffff;
+          }
+
+          form {
+              background: #1c1c1c;
+              color: #ffffff;
+              box-shadow: 0 0 10px rgba(255,255,255,0.1);
+          }
+
+          .content {
+            background: #1c1c1c;
+            color: #ffffff;
+          }
+
+          input[type="number"] {
+              background: #2c2c2c;
+              color: #ffffff;
+              border: 1px solid #555;
+          }
+
+          button {
+              background-color: #246;
+              color: white;
+          }
+
+          button:hover {
+              background-color: #355;
+          }
+
+          th {
+              background-color: #246;
+          }
+
+          h1, h2, h3 {
+              color: #4a90e2;
+          }
+      }
+  </style>
+</head>
+<body>
+    <h1>Mortgage Calculator</h1>
+    <button class="active collapsible">About This Tool</button>
+    <div class="active content">
+        <p><strong>Purpose:</strong> This mortgage calculator helps you calculate monthly payments and generate an amortization schedule based on your loan amount, loan duration, interest rate, and down payment.</p>
+        <p><strong>How to Use:</strong> Enter the loan amount, loan duration, interest rate, and down payment in the form. You can also add multiple recast payments, which are additional principal payments made at specified months. Click on "Calculate" to generate the amortization schedule.</p>
+        <p><strong>What is Recasting:</strong> Recasting is the process of making additional principal payments to reduce the remaining balance of the loan. This can result in lower monthly payments and a shorter loan term.</p>
+        <p><strong>Recast Logic:</strong> When a recast payment is made, the remaining principal is reduced by the recast amount. The monthly payment is then recalculated based on the new principal and the remaining number of payments. This updated monthly payment is used for the rest of the loan term unless another recast payment is made.</p>
+    </div>
+    <form id="mortgageForm">
+        <div class="form-group">
+            <label for="loanAmount">Loan Amount:</label>
+            <input type="number" id="loanAmount" required>
+        </div>
+        <div class="form-group">
+            <label for="loanDuration">Loan Duration (years):</label>
+            <input type="number" id="loanDuration" required>
+        </div>
+        <div class="form-group">
+            <label for="interestRate">Interest Rate (%):</label>
+            <input type="number" id="interestRate" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="downPayment">Down Payment:</label>
+            <input type="number" id="downPayment" required>
+        </div>
+        <section id="recastSection" class="form-group">
+            <h3>Recast Details</h3>
+            <div id="recastContainer"></div>
+            <button type="button" onclick="addRecast()">Add Recast</button>
+        </section>
+        <div class="form-group">
+            <button type="button" onclick="calculateMortgage()">Calculate</button>
+        </div>
+    </form>
+
+    <h2>Monthly Payment: <span id="monthlyPayment"></span></h2>
+    <h3>Amortization Schedule</h3>
+    <table id="amortizationTable">
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Remaining Principal</th>
+                <th>Interest Payment</th>
+                <th>Principal Payment</th>
+                <th>Monthly Payment</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Amortization schedule will be populated here -->
+        </tbody>
+    </table>
+
+    <script>
+        // Collapsible section script
+        document.addEventListener('DOMContentLoaded', function() {
+            const coll = document.getElementsByClassName('collapsible');
+            for (let i = 0; i < coll.length; i++) {
+                coll[i].addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    content.classList.toggle('active');
+                });
+            }
+        });
+
+        function calculateMortgage() {
+            const loanAmount = document.getElementById('loanAmount').value - document.getElementById('downPayment').value;
+            const loanDuration = document.getElementById('loanDuration').value;
+            const interestRate = document.getElementById('interestRate').value / 100;
+            const monthlyRate = interestRate / 12;
+            const numberOfPayments = loanDuration * 12;
+
+            const monthlyPayment = (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -numberOfPayments));
+            document.getElementById('monthlyPayment').textContent = monthlyPayment.toFixed(2);
+
+            // Gather all recast data
+            const recasts = Array.from(document.querySelectorAll('.recastEntry')).map(entry => ({
+                month: parseInt(entry.querySelector('.recastMonth').value),
+                amount: parseFloat(entry.querySelector('.recastAmount').value)
+            }));
+
+            generateAmortizationTable(loanAmount, monthlyRate, numberOfPayments, monthlyPayment, recasts);
+        }
+
+        function generateAmortizationTable(principal, monthlyRate, numberOfPayments, monthlyPayment, recasts) {
+            const tableBody = document.getElementById('amortizationTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear any existing rows in the table
+
+            let remainingPrincipal = principal;
+            let currentMonthlyPayment = monthlyPayment;
+            let sortedRecasts = recasts.sort((a, b) => a.month - b.month); // Sort recasts by month
+
+            // Loop through each payment period
+            for (let i = 1; i <= numberOfPayments; i++) {
+                // Apply any recasts for the current month
+                sortedRecasts.forEach(recast => {
+                    if (i === recast.month) {
+                        remainingPrincipal -= recast.amount; // Reduce principal by recast amount
+                        const remainingPayments = numberOfPayments - i;
+                        // Recalculate monthly payment based on new principal
+                        currentMonthlyPayment = (remainingPrincipal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -remainingPayments));
+                    }
+                });
+
+                const interestPayment = remainingPrincipal * monthlyRate; // Calculate interest payment
+                const principalPayment = currentMonthlyPayment - interestPayment; // Calculate principal payment
+                remainingPrincipal -= principalPayment; // Reduce principal by principal payment
+
+                if (remainingPrincipal < 0) {
+                    remainingPrincipal = 0; // Ensure principal doesn't go negative
+                }
+
+                // Insert a new row in the amortization table
+                const row = tableBody.insertRow(-1);
+                row.insertCell(0).textContent = i; // Payment number
+                row.insertCell(1).textContent = remainingPrincipal.toFixed(2); // Remaining principal
+                row.insertCell(2).textContent = interestPayment.toFixed(2); // Interest payment
+                row.insertCell(3).textContent = principalPayment.toFixed(2); // Principal payment
+                row.insertCell(4).textContent = currentMonthlyPayment.toFixed(2); // Monthly payment
+            }
+        }
+
+        function addRecast() {
+            const container = document.getElementById('recastContainer');
+            const div = document.createElement('div');
+            div.className = 'recastEntry';
+            div.innerHTML = `
+                <label>Recast Month:</label>
+                <input type="number" class="recastMonth"><br>
+                <label>Recast Amount:</label>
+                <input type="number" class="recastAmount"><br>
+                <button type="button" onclick="removeRecast(this)">Remove</button><br><br>
+            `;
+            container.appendChild(div); // Add the new recast entry to the container
+        }
+
+        function removeRecast(button) {
+            button.parentNode.remove(); // Remove the parent div of the button
+        }
+    </script>
+</body>
+</html>
