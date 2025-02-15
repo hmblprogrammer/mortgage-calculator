@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mortgage Calculator</title>
+    <title>Dynamic Mortgage Modeler</title>
     <style>
       /* General body styles */
       body {
@@ -219,7 +219,7 @@
             <div id="recastContainer"></div>
             <button type="button" onclick="addRecast()">Add Recast</button>
         </section>
-        <div class="calculate form-group"></div>
+        <div class="form-group">
             <button type="button" onclick="calculateMortgage()">Calculate</button>
         </div>
     </form>
@@ -240,6 +240,7 @@
             <!-- Amortization schedule will be populated here -->
         </tbody>
     </table>
+    <h3 id="earlyPayoffMessage"></h3>
 
     <script>
         // Collapsible section script
@@ -348,6 +349,7 @@
         function generateAmortizationTable(principal, monthlyRate, numberOfPayments, monthlyPayment, recasts) {
             const tableBody = document.getElementById('amortizationTable').getElementsByTagName('tbody')[0];
             tableBody.innerHTML = ''; // Clear any existing rows in the table
+            document.getElementById('earlyPayoffMessage').textContent = ''; // Clear early payoff message
 
             let remainingPrincipal = principal;
             let currentMonthlyPayment = monthlyPayment;
@@ -366,20 +368,36 @@
                 });
 
                 const interestPayment = remainingPrincipal * monthlyRate; // Calculate interest payment
-                const principalPayment = currentMonthlyPayment - interestPayment; // Calculate principal payment
+                const principalPayment = Math.min(currentMonthlyPayment - interestPayment, remainingPrincipal); // Calculate principal payment
                 remainingPrincipal -= principalPayment; // Reduce principal by principal payment
 
-                if (remainingPrincipal < 0) {
-                    remainingPrincipal = 0; // Ensure principal doesn't go negative
-                }
+                const totalPayment = principalPayment + interestPayment;
+                const displayMonthlyPayment = Math.min(currentMonthlyPayment, totalPayment);
+
+                // Format numbers as US currency
+                const formatCurrency = (value) => {
+                    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+                };
+
+                // Calculate years and months
+                const years = Math.floor(i / 12);
+                const months = i % 12;
+                const monthLabel = `${years} years, ${months} months`;
 
                 // Insert a new row in the amortization table
                 const row = tableBody.insertRow(-1);
-                row.insertCell(0).textContent = i; // Payment number
-                row.insertCell(1).textContent = remainingPrincipal.toFixed(2); // Remaining principal
-                row.insertCell(2).textContent = interestPayment.toFixed(2); // Interest payment
-                row.insertCell(3).textContent = principalPayment.toFixed(2); // Principal payment
-                row.insertCell(4).textContent = currentMonthlyPayment.toFixed(2); // Monthly payment
+                const monthCell = row.insertCell(0);
+                monthCell.textContent = monthLabel; // Payment number as years and months
+                monthCell.title = `Month ${i}`; // Tooltip with month number
+                row.insertCell(1).textContent = formatCurrency(remainingPrincipal); // Remaining principal
+                row.insertCell(2).textContent = formatCurrency(interestPayment); // Interest payment
+                row.insertCell(3).textContent = formatCurrency(principalPayment); // Principal payment
+                row.insertCell(4).textContent = formatCurrency(displayMonthlyPayment); // Monthly payment
+
+                if (remainingPrincipal <= 0) {
+                    document.getElementById('earlyPayoffMessage').textContent = 'Early payoff 🎉';
+                    break;
+                }
             }
         }
 
