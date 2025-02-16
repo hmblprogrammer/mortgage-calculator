@@ -19,119 +19,119 @@
           color: #2c3e50;
       }
 
-      /* Form styling */
-      form {
-          background: white;
-          padding: 20px;
-          border-radius: 8px;
-          box-shadow: 0 0 10px rgba(0,0,0,0.1);
-          margin-bottom: 20px;
-      }
+        /* Form styling */
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
 
-      label {
-          display: block;
-          margin-bottom: 10px;
-      }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
 
-      input[type="number"] {
-          width: calc(100% - 22px);
-          padding: 10px;
-          margin-bottom: 20px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-      }
+        input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
 
-      button {
-          background-color: #3498db;
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          font-weight: bold;
-          border-radius: 4px;
-          cursor: pointer;
-          box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
 
-      button:hover {
-          background-color: #2980b9;
-      }
+        button:hover {
+            background-color: #2980b9;
+        }
 
-      /* Table styling */
-      table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 20px;
-          box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      }
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
 
-      th, td {
-          text-align: left;
-          padding: 8px;
-          border-bottom: 1px solid #ddd;
-      }
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
 
-      th {
-          background-color: #3498db;
-          color: white;
-      }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
 
-      /* Add media queries for responsiveness */
+        /* Add media queries for responsiveness */
       @media (max-width: 600px) {
           input[type="number"], button {
               width: 100%;
           }
       }
 
-      @media (min-width: 600px) {
-          form {
-              display: flex;
-              flex-wrap: wrap;
-              justify-content: space-between;
-          }
+        @media (min-width: 600px) {
+            form {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
 
-          .form-group {
-              width: 48%;
-          }
+            .form-group {
+                width: 48%;
+            }
 
-          input[type="number"] {
-              width: calc(100% - 22px);
-          }
-      }
+            input[type="number"] {
+                width: calc(100% - 22px);
+            }
+        }
 
-      /* Collapsible section styling */
-      .collapsible {
-          background-color: #3498db;
-          color: white;
-          cursor: pointer;
-          padding: 10px;
-          width: 100%;
-          border: none;
-          text-align: left;
-          outline: none;
-          font-size: 15px;
-      }
+        /* Collapsible section styling */
+        .collapsible {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
 
-      .active, .collapsible:hover {
-          background-color: #2980b9;
-      }
+        .active, .collapsible:hover {
+            background-color: #2980b9;
+        }
 
-      .content {
-          padding: 0 18px;
-          display: none;
-          overflow: hidden;
-          background-color: #f1f1f1;
-      }
+        .content {
+            padding: 0 18px;
+            display: none;
+            overflow: hidden;
+            background-color: #f1f1f1;
+        }
 
       .content.active {
         display: block;
       }
 
-      .error {
-          color: red;
-          font-size: 0.9em;
-      }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
 
       .calculate.form-group {
         width: 100%;
@@ -181,7 +181,7 @@
               color: #4a90e2;
           }
       }
-  </style>
+    </style>
 </head>
 <body>
     <h1>Mortgage Calculator</h1>
@@ -279,6 +279,11 @@
             });
         });
 
+        // Format numbers as US currency
+        function formatCurrency(value) {
+            return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        };
+        
         function calculateMortgage() {
             // Validate inputs
             const loanAmount = parseFloat(document.getElementById('loanAmount').value);
@@ -325,7 +330,7 @@
             const numberOfPayments = loanDuration * 12;
 
             const monthlyPayment = (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -numberOfPayments));
-            document.getElementById('monthlyPayment').textContent = monthlyPayment.toFixed(2);
+            document.getElementById('monthlyPayment').textContent = formatCurrency(monthlyPayment);
 
             // Gather all recast data
             const recasts = Array.from(document.querySelectorAll('.recastEntry')).map(entry => {
@@ -354,6 +359,7 @@
             const tableBody = document.getElementById('amortizationTable').getElementsByTagName('tbody')[0];
             tableBody.innerHTML = ''; // Clear any existing rows in the table
             document.getElementById('earlyPayoffMessage').textContent = ''; // Clear early payoff message
+            const monthlyPaymentDiv = document.getElementById('monthlyPayment');
 
             let remainingPrincipal = principal;
             let currentMonthlyPayment = monthlyPayment;
@@ -367,7 +373,18 @@
                         remainingPrincipal -= recast.amount; // Reduce principal by recast amount
                         const remainingPayments = numberOfPayments - i;
                         // Recalculate monthly payment based on new principal
-                        currentMonthlyPayment = (remainingPrincipal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -remainingPayments));
+                        const newMonthlyPayment = (remainingPrincipal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -remainingPayments));
+                        const span = document.createElement('span');
+                        span.textContent = ` ➡ ${formatCurrency(newMonthlyPayment)}`;
+                        if (i < 12) {
+                            span.title = `${i} months`;
+                        } else if (i == 12) {
+                            span.title = `1 year`;
+                        } else {
+                            span.title = `${Math.floor(i / 12)} years, ${i % 12} months`;
+                        }
+                        monthlyPaymentDiv.appendChild(span);
+                        currentMonthlyPayment = newMonthlyPayment;
                     }
                 });
 
@@ -377,11 +394,6 @@
 
                 const totalPayment = principalPayment + interestPayment;
                 const displayMonthlyPayment = Math.min(currentMonthlyPayment, totalPayment);
-
-                // Format numbers as US currency
-                const formatCurrency = (value) => {
-                    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-                };
 
                 // Calculate years and months
                 const years = Math.floor(i / 12);
