@@ -57,8 +57,16 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
 
+        button.reset {
+            background-color: #e74c3c;
+        }
+
         button:hover {
             background-color: #2980b9;
+        }
+
+        button.reset:hover {
+            background-color: #c0392b;
         }
 
         /* Table styling */
@@ -240,7 +248,8 @@
             <div id="recastContainer"></div>
             <button type="button" onclick="addRecast()">Add Recast</button>
         </section>
-        <div class="form-group">
+        <div class="form-group calculate"></div>
+            <button type="button" onclick="resetForm()" class="reset">Reset</button>
             <button type="button" onclick="calculateMortgage()">Calculate</button>
         </div>
     </form>
@@ -455,6 +464,17 @@
         function removeRecast(button) {
             button.parentNode.remove(); // Remove the parent div of the button
             calculateMortgage(); // Recalculate after removing a recast
+        }
+
+        function resetForm() {
+            if (confirm("This will remove all entered values and return to a blank slate. Please confirm you want to reset.")) {
+                document.getElementById('mortgageForm').reset();
+                document.getElementById('monthlyPayment').textContent = '';
+                document.getElementById('amortizationTable').getElementsByTagName('tbody')[0].innerHTML = '';
+                document.getElementById('earlyPayoffMessage').textContent = '';
+                document.getElementById('recastContainer').innerHTML = '';
+                window.location.hash = '';
+            }
         }
     </script>
 </body>
