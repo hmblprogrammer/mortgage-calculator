@@ -328,10 +328,14 @@
             document.getElementById('monthlyPayment').textContent = monthlyPayment.toFixed(2);
 
             // Gather all recast data
-            const recasts = Array.from(document.querySelectorAll('.recastEntry')).map(entry => ({
-                month: parseInt(entry.querySelector('.recastMonth').value),
-                amount: parseFloat(entry.querySelector('.recastAmount').value)
-            }));
+            const recasts = Array.from(document.querySelectorAll('.recastEntry')).map(entry => {
+                const month = parseInt(entry.querySelector('.recastMonth').value);
+                const amount = parseFloat(entry.querySelector('.recastAmount').value);
+                if (isNaN(month) || month <= 0 || isNaN(amount) || amount <= 0) {
+                    return null;
+                }
+                return { month, amount };
+            }).filter(recast => recast !== null);
 
             // Save state to URL hash
             const state = {
