@@ -314,6 +314,10 @@
             return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
         };
 
+        var hashUpdateTimer;
+
+        
+
         function calculateMortgage() {
             // Validate inputs
             const loanAmount = parseFloat(document.getElementById('loanAmount').value);
@@ -380,7 +384,10 @@
                 downPayment: document.getElementById('downPayment').value,
                 recasts: recasts
             };
-            window.location.hash = encodeURIComponent(JSON.stringify(state));
+            clearTimeout(hashUpdateTimer);
+            hashUpdateTimer = setTimeout(() => {
+                window.location.hash = encodeURIComponent(JSON.stringify(state));
+            }, 950);
 
             generateAmortizationTable(principal, monthlyRate, numberOfPayments, monthlyPayment, recasts);
         }
