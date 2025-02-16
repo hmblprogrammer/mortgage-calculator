@@ -283,25 +283,8 @@
                     content.classList.toggle('active');
                 });
             }
-
-            // Load state from URL hash if available
-            if (window.location.hash) {
-                const state = JSON.parse(decodeURIComponent(window.location.hash.substring(1)));
-                document.getElementById('loanAmount').value = state.loanAmount;
-                document.getElementById('loanDuration').value = state.loanDuration;
-                document.getElementById('interestRate').value = state.interestRate;
-                document.getElementById('downPayment').value = state.downPayment;
-
-                state.recasts.forEach(recast => {
-                    addRecast();
-                    const recastEntries = document.querySelectorAll('.recastEntry');
-                    const lastEntry = recastEntries[recastEntries.length - 1];
-                    lastEntry.querySelector('.recastMonth').value = recast.month;
-                    lastEntry.querySelector('.recastAmount').value = recast.amount;
-                });
-
-                calculateMortgage();
-            }
+            
+            loadStateFromHash();
 
             // Add event listeners for dynamic recalculation
             document.querySelectorAll('#loanAmount, #loanDuration, #interestRate, #downPayment').forEach(input => {
@@ -314,9 +297,34 @@
             return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
         };
 
-        var hashUpdateTimer;
+        function loadStateFromHash() {
+            if (isLoadingState) return;
+            // Load state from URL hash if available
+            if (window.location.hash) {
+                isLoadingState = true;
+                const state = JSON.parse(decodeURIComponent(window.location.hash.substring(1)));
+                document.getElementById('loanAmount').value = state.loanAmount;
+                document.getElementById('loanDuration').value = state.loanDuration;
+                document.getElementById('interestRate').value = state.interestRate;
+                document.getElementById('downPayment').value = state.downPayment;
 
-        
+                document.getElementById('recastContainer').innerHTML = '';
+                state.recasts.forEach(recast => {
+                    addRecast();
+                    const recastEntries = document.querySelectorAll('.recastEntry');
+                    const lastEntry = recastEntries[recastEntries.length - 1];
+                    lastEntry.querySelector('.recastMonth').value = recast.month;
+                    lastEntry.querySelector('.recastAmount').value = recast.amount;
+                });
+
+                calculateMortgage();
+                isLoadingState = false;
+            }
+        }
+
+        var hashUpdateTimer, hashStateLoadTimer, isLoadingState = false;
+
+        window.addEventListener('hashchange', loadStateFromHash);
 
         function calculateMortgage() {
             // Validate inputs
@@ -385,9 +393,13 @@
                 recasts: recasts
             };
             clearTimeout(hashUpdateTimer);
-            hashUpdateTimer = setTimeout(() => {
-                window.location.hash = encodeURIComponent(JSON.stringify(state));
-            }, 950);
+            if(!isLoadingState) {
+                hashUpdateTimer = setTimeout(() => {
+                    if(!isLoadingState) {
+                        window.location.hash = encodeURIComponent(JSON.stringify(state));
+                    }
+                }, 950);
+            }
 
             generateAmortizationTable(principal, monthlyRate, numberOfPayments, monthlyPayment, recasts);
         }
