@@ -1,197 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Mortgage Modeler</title>
     <style>
-      /* General body styles */
-      body {
-          font-family: 'Arial', sans-serif;
-          background-color: #f4f4f9;
-          color: #333;
-          margin: 20px;
-          padding: 20px;
-      }
+        /* General body styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 20px;
+            padding: 20px;
+        }
 
-      /* Header styles */
-      h1, h2, h3 {
-          color: #2c3e50;
-      }
+        /* Header styles */
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
 
-      /* Form styling */
-      form {
-          background: white;
-          padding: 20px;
-          border-radius: 8px;
-          box-shadow: 0 0 10px rgba(0,0,0,0.1);
-          margin-bottom: 20px;
-      }
+        /* Form styling */
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
 
-      label {
-          display: block;
-          margin-bottom: 10px;
-      }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
 
-      input[type="number"] {
-          width: calc(100% - 22px);
-          padding: 10px;
-          margin-bottom: 20px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-      }
+        input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
 
-      button {
-          background-color: #3498db;
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          font-weight: bold;
-          border-radius: 4px;
-          cursor: pointer;
-          box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
 
-      button:hover {
-          background-color: #2980b9;
-      }
+        button.reset {
+            background-color: #e74c3c;
+        }
 
-      /* Table styling */
-      table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 20px;
-          box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      }
+        button:hover {
+            background-color: #2980b9;
+        }
 
-      th, td {
-          text-align: left;
-          padding: 8px;
-          border-bottom: 1px solid #ddd;
-      }
+        button.reset:hover {
+            background-color: #c0392b;
+        }
 
-      th {
-          background-color: #3498db;
-          color: white;
-      }
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-      /* Add media queries for responsiveness */
-      @media (max-width: 600px) {
-          input[type="number"], button {
-              width: 100%;
-          }
-      }
+        th,
+        td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
 
-      @media (min-width: 600px) {
-          form {
-              display: flex;
-              flex-wrap: wrap;
-              justify-content: space-between;
-          }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
 
-          .form-group {
-              width: 48%;
-          }
+        /* Add media queries for responsiveness */
+        @media (max-width: 600px) {
 
-          input[type="number"] {
-              width: calc(100% - 22px);
-          }
-      }
+            input[type="number"],
+            button {
+                width: 100%;
+            }
+        }
 
-      /* Collapsible section styling */
-      .collapsible {
-          background-color: #3498db;
-          color: white;
-          cursor: pointer;
-          padding: 10px;
-          width: 100%;
-          border: none;
-          text-align: left;
-          outline: none;
-          font-size: 15px;
-      }
+        @media (min-width: 600px) {
+            form {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
 
-      .active, .collapsible:hover {
-          background-color: #2980b9;
-      }
+            .form-group {
+                width: 48%;
+            }
 
-      .content {
-          padding: 0 18px;
-          display: none;
-          overflow: hidden;
-          background-color: #f1f1f1;
-      }
+            input[type="number"] {
+                width: calc(100% - 22px);
+            }
+        }
 
-      .content.active {
-        display: block;
-      }
+        /* Collapsible section styling */
+        .collapsible {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
 
-      .error {
-          color: red;
-          font-size: 0.9em;
-      }
+        .active,
+        .collapsible:hover {
+            background-color: #2980b9;
+        }
 
-      .calculate.form-group {
-        width: 100%;
-        margin-top: 20px;
-        border-top: 1px solid #999;
-        padding-top: 0.5em;
-      }
+        .content {
+            padding: 0 18px;
+            display: none;
+            overflow: hidden;
+            background-color: #f1f1f1;
+        }
 
-      /* Dark mode support */
-      @media (prefers-color-scheme: dark) {
-          body {
-              background-color: #121212;
-              color: #ffffff;
-          }
+        .content.active {
+            display: block;
+        }
 
-          form {
-              background: #1c1c1c;
-              color: #ffffff;
-              box-shadow: 0 0 10px rgba(255,255,255,0.1);
-          }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
 
-          .content {
-            background: #1c1c1c;
-            color: #ffffff;
-          }
+        .calculate.form-group {
+            width: 100%;
+            margin-top: 20px;
+            border-top: 1px solid #999;
+            padding-top: 0.5em;
+        }
 
-          input[type="number"] {
-              background: #2c2c2c;
-              color: #ffffff;
-              border: 1px solid #555;
-          }
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+                color: #ffffff;
+            }
 
-          button {
-              background-color: #246;
-              color: white;
-          }
+            form {
+                background: #1c1c1c;
+                color: #ffffff;
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            }
 
-          button:hover {
-              background-color: #355;
-          }
+            .content {
+                background: #1c1c1c;
+                color: #ffffff;
+            }
 
-          th {
-              background-color: #246;
-          }
+            input[type="number"] {
+                background: #2c2c2c;
+                color: #ffffff;
+                border: 1px solid #555;
+            }
 
-          h1, h2, h3 {
-              color: #4a90e2;
-          }
-      }
-  </style>
+            button {
+                background-color: #246;
+                color: white;
+            }
+
+            button:hover {
+                background-color: #355;
+            }
+
+            th {
+                background-color: #246;
+            }
+
+            h1,
+            h2,
+            h3 {
+                color: #4a90e2;
+            }
+        }
+    </style>
 </head>
+
 <body>
     <h1>Mortgage Calculator</h1>
     <button class="active collapsible">About This Tool</button>
     <div class="active content">
-        <p><strong>Purpose:</strong> This mortgage calculator helps you calculate monthly payments and generate an amortization schedule based on your loan amount, loan duration, interest rate, and down payment.</p>
-        <p><strong>How to Use:</strong> Enter the loan amount, loan duration, interest rate, and down payment in the form. You can also add multiple recast payments, which are additional principal payments made at specified months. Click on "Calculate" to generate the amortization schedule.</p>
-        <p><strong>What is Recasting:</strong> Recasting is the process of making additional principal payments to reduce the remaining balance of the loan. This can result in lower monthly payments and a shorter loan term.</p>
-        <p><strong>Recast Logic:</strong> When a recast payment is made, the remaining principal is reduced by the recast amount. The monthly payment is then recalculated based on the new principal and the remaining number of payments. This updated monthly payment is used for the rest of the loan term unless another recast payment is made.</p>
-        <p><strong>Note:</strong> This tool is a personal project and cannot be relied on for accuracy. It is open source under the Unlicense, and the source code is available on GitHub. No personal information is collected, and the tool runs entirely in your browser on your computer. No warranty is provided, and use of this tool is at your own risk.</p>
+        <p><strong>Purpose:</strong> This mortgage calculator helps you calculate monthly payments and generate an
+            amortization schedule based on your loan amount, loan duration, interest rate, and down payment.</p>
+        <p><strong>How to Use:</strong> Enter the loan amount, loan duration, interest rate, and down payment in the
+            form. You can also add multiple recast payments, which are additional principal payments made at specified
+            months. Click on "Calculate" to generate the amortization schedule.</p>
+        <p><strong>What is Recasting:</strong> Recasting is the process of making additional principal payments to
+            reduce the remaining balance of the loan. This can result in lower monthly payments and a shorter loan term.
+        </p>
+        <p><strong>Recast Logic:</strong> When a recast payment is made, the remaining principal is reduced by the
+            recast amount. The monthly payment is then recalculated based on the new principal and the remaining number
+            of payments. This updated monthly payment is used for the rest of the loan term unless another recast
+            payment is made.</p>
+        <p><strong>Note:</strong> This tool is a personal project and cannot be relied on for accuracy. It is open
+            source under the Unlicense, and the source code is available on GitHub. No personal information is
+            collected, and the tool runs entirely in your browser on your computer. No warranty is provided, and use of
+            this tool is at your own risk.</p>
     </div>
     <form id="mortgageForm">
         <div class="form-group">
@@ -219,7 +248,8 @@
             <div id="recastContainer"></div>
             <button type="button" onclick="addRecast()">Add Recast</button>
         </section>
-        <div class="form-group">
+        <div class="form-group calculate"></div>
+            <button type="button" onclick="resetForm()" class="reset">Reset</button>
             <button type="button" onclick="calculateMortgage()">Calculate</button>
         </div>
     </form>
@@ -244,24 +274,41 @@
 
     <script>
         // Collapsible section script
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const coll = document.getElementsByClassName('collapsible');
             for (let i = 0; i < coll.length; i++) {
-                coll[i].addEventListener('click', function() {
+                coll[i].addEventListener('click', function () {
                     this.classList.toggle('active');
                     const content = this.nextElementSibling;
                     content.classList.toggle('active');
                 });
             }
+            
+            loadStateFromHash();
 
+            // Add event listeners for dynamic recalculation
+            document.querySelectorAll('#loanAmount, #loanDuration, #interestRate, #downPayment').forEach(input => {
+                input.addEventListener('input', calculateMortgage);
+            });
+        });
+
+        // Format numbers as US currency
+        function formatCurrency(value) {
+            return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        };
+
+        function loadStateFromHash() {
+            if (isLoadingState) return;
             // Load state from URL hash if available
             if (window.location.hash) {
+                isLoadingState = true;
                 const state = JSON.parse(decodeURIComponent(window.location.hash.substring(1)));
                 document.getElementById('loanAmount').value = state.loanAmount;
                 document.getElementById('loanDuration').value = state.loanDuration;
                 document.getElementById('interestRate').value = state.interestRate;
                 document.getElementById('downPayment').value = state.downPayment;
 
+                document.getElementById('recastContainer').innerHTML = '';
                 state.recasts.forEach(recast => {
                     addRecast();
                     const recastEntries = document.querySelectorAll('.recastEntry');
@@ -271,13 +318,13 @@
                 });
 
                 calculateMortgage();
+                isLoadingState = false;
             }
+        }
 
-            // Add event listeners for dynamic recalculation
-            document.querySelectorAll('#loanAmount, #loanDuration, #interestRate, #downPayment').forEach(input => {
-                input.addEventListener('input', calculateMortgage);
-            });
-        });
+        var hashUpdateTimer, hashStateLoadTimer, isLoadingState = false;
+
+        window.addEventListener('hashchange', loadStateFromHash);
 
         function calculateMortgage() {
             // Validate inputs
@@ -325,13 +372,17 @@
             const numberOfPayments = loanDuration * 12;
 
             const monthlyPayment = (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -numberOfPayments));
-            document.getElementById('monthlyPayment').textContent = monthlyPayment.toFixed(2);
+            document.getElementById('monthlyPayment').textContent = formatCurrency(monthlyPayment);
 
             // Gather all recast data
-            const recasts = Array.from(document.querySelectorAll('.recastEntry')).map(entry => ({
-                month: parseInt(entry.querySelector('.recastMonth').value),
-                amount: parseFloat(entry.querySelector('.recastAmount').value)
-            }));
+            const recasts = Array.from(document.querySelectorAll('.recastEntry')).map(entry => {
+                const month = parseInt(entry.querySelector('.recastMonth').value);
+                const amount = parseFloat(entry.querySelector('.recastAmount').value);
+                if (isNaN(month) || month <= 0 || isNaN(amount) || amount <= 0) {
+                    return null;
+                }
+                return { month, amount };
+            }).filter(recast => recast !== null);
 
             // Save state to URL hash
             const state = {
@@ -341,7 +392,14 @@
                 downPayment: document.getElementById('downPayment').value,
                 recasts: recasts
             };
-            window.location.hash = encodeURIComponent(JSON.stringify(state));
+            clearTimeout(hashUpdateTimer);
+            if(!isLoadingState) {
+                hashUpdateTimer = setTimeout(() => {
+                    if(!isLoadingState) {
+                        window.location.hash = encodeURIComponent(JSON.stringify(state));
+                    }
+                }, 950);
+            }
 
             generateAmortizationTable(principal, monthlyRate, numberOfPayments, monthlyPayment, recasts);
         }
@@ -350,6 +408,7 @@
             const tableBody = document.getElementById('amortizationTable').getElementsByTagName('tbody')[0];
             tableBody.innerHTML = ''; // Clear any existing rows in the table
             document.getElementById('earlyPayoffMessage').textContent = ''; // Clear early payoff message
+            const monthlyPaymentDiv = document.getElementById('monthlyPayment');
 
             let remainingPrincipal = principal;
             let currentMonthlyPayment = monthlyPayment;
@@ -363,7 +422,18 @@
                         remainingPrincipal -= recast.amount; // Reduce principal by recast amount
                         const remainingPayments = numberOfPayments - i;
                         // Recalculate monthly payment based on new principal
-                        currentMonthlyPayment = (remainingPrincipal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -remainingPayments));
+                        const newMonthlyPayment = (remainingPrincipal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -remainingPayments));
+                        const span = document.createElement('span');
+                        span.textContent = ` ➡ ${formatCurrency(newMonthlyPayment)}`;
+                        if (i < 12) {
+                            span.title = `${i} months`;
+                        } else if (i == 12) {
+                            span.title = `1 year`;
+                        } else {
+                            span.title = `${Math.floor(i / 12)} years, ${i % 12} months`;
+                        }
+                        monthlyPaymentDiv.appendChild(span);
+                        currentMonthlyPayment = newMonthlyPayment;
                     }
                 });
 
@@ -373,11 +443,6 @@
 
                 const totalPayment = principalPayment + interestPayment;
                 const displayMonthlyPayment = Math.min(currentMonthlyPayment, totalPayment);
-
-                // Format numbers as US currency
-                const formatCurrency = (value) => {
-                    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-                };
 
                 // Calculate years and months
                 const years = Math.floor(i / 12);
@@ -419,6 +484,18 @@
             button.parentNode.remove(); // Remove the parent div of the button
             calculateMortgage(); // Recalculate after removing a recast
         }
+
+        function resetForm() {
+            if (confirm("This will remove all entered values and return to a blank slate. Please confirm you want to reset.")) {
+                document.getElementById('mortgageForm').reset();
+                document.getElementById('monthlyPayment').textContent = '';
+                document.getElementById('amortizationTable').getElementsByTagName('tbody')[0].innerHTML = '';
+                document.getElementById('earlyPayoffMessage').textContent = '';
+                document.getElementById('recastContainer').innerHTML = '';
+                window.location.hash = '';
+            }
+        }
     </script>
 </body>
+
 </html>
